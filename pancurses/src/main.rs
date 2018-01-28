@@ -1,13 +1,17 @@
 extern crate libdodger;
 extern crate pancurses;
+extern crate time;
 
 use pancurses::{initscr, endwin, Input, noecho, resize_term, Window, set_blink};
 use libdodger::{Game, Player, Baddie};
+use std::time::Duration;
+use std::thread;
 
 fn main() {
     let window = initscr();
     window.refresh();
     window.keypad(true);
+    window.nodelay(true);
 
     set_blink(true);
     noecho();
@@ -17,16 +21,25 @@ fn main() {
     let mut game = Game::new(width as u32, height as u32);
 
     loop {
+        let start_frame = time::precise_time_s();
+
         render(&game, &window);
 
-        match window.getch() {
+        let action = match window.getch() {
             Some(Input::KeyDC) => break,
-            Some(Input::KeyResize) => { resize_term(0, 0); }
-            Some(Input::KeyLeft) => { game.turn(-1); }
-            Some(Input::KeyRight) => { game.turn(1); }
-            Some(_) => { game.turn(0); },
-            None => { game.turn(0); },
-        }
+            Some(Input::KeyResize) => {
+                resize_term(0, 0);
+                continue;
+            }
+            Some(Input::KeyLeft) => { -1 }
+            Some(Input::KeyRight) => { 1 }
+            _ => { 0 }
+        };
+
+        game.turn(action);
+
+        let remaining_time = (start_frame + 1.0 / 60.0) - time::precise_time_s();
+        thread::sleep(Duration::from_millis((remaining_time * 1_000.0) as u64));
     }
 
     endwin();

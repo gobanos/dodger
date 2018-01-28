@@ -6,3 +6,4 @@ authors = ["Grégory OBANOS <gregory.obanos@gmail.com>"]
 [dependencies]
 libdodger = { path = "../game" }
 pancurses = "*"
+time = "*"
