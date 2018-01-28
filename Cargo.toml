@@ -1,0 +1,12 @@
+[package]
+name = "dodger"
+version = "0.1.0"
+authors = ["Grégory OBANOS <gregory.obanos@gmail.com>"]
+
+[lib]
+
+[workspace]
+
+[dependencies]
+libdodger = { path = "game" }
+dodger-pancurses = { path = "pancurses" }
